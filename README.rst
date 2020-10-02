@@ -190,3 +190,26 @@ Now, the request for creating new object will look like this:
 .. code-block:: bash
 
     $ http POST "http://localhost:8000/projects/" projecttype="artproject" topic="Guernica" artist="Picasso"
+
+
+Using with ModelSerializer
+--------------------------
+
+If you want to use this serializer as nested serializer (e.g. with WritableNestedSerializer), it needs to inherit from ``ModelSerializer`` class and have ``Meta`` class defined. In this case it will use proper serializer defined in ``model_serializer_mapping``.
+
+.. code-block:: python
+    # serializers.py
+    from rest_framework.serializers import ModelSerializer
+    from rest_polymorphic.serializers import PolymorphicSerializer
+
+
+    class ProjectPolymorphicSerializer(PolymorphicSerializer, ModelSerializer):
+        model_serializer_mapping = {
+            Project: ProjectSerializer,
+            ArtProject: ArtProjectSerializer,
+            ResearchProject: ResearchProjectSerializer
+        }
+
+        class Meta:
+            model = Project
+            fields = '__all__'
